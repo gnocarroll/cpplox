@@ -1,5 +1,7 @@
 #include "Scanner.hpp"
 
+#include <cstdlib>
+
 #include "Lox.hpp"
 
 void Scanner::scanTokens() {
@@ -64,23 +66,26 @@ void Scanner::scanToken() {
 	case '"': string(); break; // string literal
 
 	default:
-		Lox::error(line, "Unexpected char.");
+		if (Scanner::isDigit(c)) {
+			number();
+		}
+		else if (Scanner::isAlpha(c)) {
+			identifier();
+		}
+		else Lox::error(line, "Unexpected char.");
 	}
 }
 
 void Scanner::addToken(TokenType type) {
-	addToken(type, nullptr);
+	LoxObject empty;
+
+	addToken(type, empty);
 }
 
-void Scanner::addToken(TokenType type, void* literal) {
+void Scanner::addToken(TokenType type, LoxObject& literal) {
 	// get relevant substr for token
-	
-	const std::string_view lexeme(
-		source.data() + start,
-		current - start
-	);
 
-	tokens.push_back(Token(type, lexeme, literal, line));
+	tokens.push_back(Token(type, currentSubstr(), literal, line));
 }
 
 void Scanner::string() {
@@ -101,5 +106,79 @@ void Scanner::string() {
 	const std::string_view value(
 		source.data() + start - 1,
 		current - start - 2
+	);
+
+	LoxObject stringObj(value);
+
+	addToken(TokenType::STRING, stringObj);
+}
+
+void Scanner::number() {
+	while (Scanner::isDigit(peek())) advance();
+
+	if (peek() == '.' && isDigit(peekNext())) {
+		advance();
+
+		while (isDigit(peek())) advance();
+	}
+
+	auto number = Scanner::parseNumber(currentSubstr());
+
+	LoxObject numberObj;
+
+	if (!number) {
+		Lox::error(line, "could not parse number (shouldn't happen)");
+		numberObj = std::move(LoxObject(LoxObject::NUMBER));
+	}
+	else numberObj = std::move(LoxObject(*number));
+
+	addToken(TokenType::NUMBER, numberObj);
+}
+
+// utilities for testing what char is
+
+bool Scanner::isDigit(char c) {
+	return c >= '0' && c <= '9';
+}
+bool Scanner::isLower(char c) {
+	return c >= 'a' && c <= 'z';
+}
+bool Scanner::isUpper(char c) {
+	return c >= 'A' && c <= 'Z';
+}
+bool Scanner::isLetter(char c) {
+	return isLower(c) || isUpper(c);
+}
+bool Scanner::isAlpha(char c) {
+	return isLetter(c) || c == '_';
+}
+
+std::optional<double> Scanner::parseNumber(const std::string_view sv) {
+	if (sv.size() == 0) return {};
+
+	const char* cStr = sv.data();
+	const char* realEnd = cStr + sv.size();
+	char* foundEnd = nullptr;
+
+	std::optional<std::string> str;
+
+	if (sv[sv.size()] != '\0') {
+		str = std::string(sv);
+		
+		cStr = str->c_str();
+		realEnd = cStr + str->size();
+	}
+
+	double ret = std::strtod(cStr, &foundEnd);
+
+	if (foundEnd != realEnd) return {};
+
+	return ret;
+}
+
+const std::string_view Scanner::currentSubstr() const {
+	return std::string_view(
+		source.data() + start,
+		current - start
 	);
 }
