@@ -72,13 +72,13 @@ private:
 public:
 	TokenType(Type type) : type(type) {}
 	
-	const char* toCStr() {
+	const char* toCStr() const {
 		if (type < 0 || type >= LOX_TOKENTYPE_COUNT) return nullptr;
 
 		return cStrs[type];
 	}
 
-	const std::string_view toStringView() {
+	const std::string_view toStringView() const {
 		const char* cStr = toCStr();
 
 		if (!cStr) return std::string_view("");

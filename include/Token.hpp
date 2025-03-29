@@ -16,9 +16,5 @@ public:
         const void* literal, const int line) :
         type(type), lexeme(lexeme), literal(literal), line(line) {}
 
-
-    public std::string toString() {
-        std::string ret;
-        ret = ret + type + " " + lexeme + " " + literal;
-    }
+    std::string toString();
 };
