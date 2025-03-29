@@ -49,7 +49,7 @@ class TokenType {
 	static constexpr char *cStrs[] = {
 #define NAME_STR(name) (char * const) #name,
 
-		FOR_EACH_TOK( NAME_STR )
+		FOR_EACH_TOK(NAME_STR)
 
 #undef NAME_STR
 
@@ -74,7 +74,7 @@ public:
 	TokenType(Type type) : type(type) {}
 	
 	const char* toCStr() {
-		if (type < 0 || type > LOX_TOKENTYPE_COUNT) return nullptr;
+		if (type < 0 || type >= LOX_TOKENTYPE_COUNT) return nullptr;
 
 		return cStrs[type];
 	}
