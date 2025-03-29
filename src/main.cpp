@@ -1,7 +1,12 @@
-#include <iostream>
+#include <string_view>
+#include <vector>
 
-int main(void) {
-	std::cout << "Hello, World!";
+#include "Lox.hpp"
 
-	return 0;
+int main(int argc, char **argv) {
+	std::vector<std::string_view> args(argc);
+
+	for (int i = 0; i < argc; i++) args[i] = argv[i];
+
+	return Lox::loxMain(args);
 }
