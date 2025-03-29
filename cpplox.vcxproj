@@ -147,6 +147,9 @@
     <ClInclude Include="include\TokenType.hpp" />
     <ClInclude Include="include\Util.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="include\Keywords.info" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

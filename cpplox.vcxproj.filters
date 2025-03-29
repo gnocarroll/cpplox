@@ -54,4 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="include\Keywords.info">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -4,6 +4,27 @@
 
 #include "Lox.hpp"
 
+const std::unordered_map<
+	std::string_view,
+	TokenType
+> Scanner::keywords = std::unordered_map<
+	std::string_view,
+	TokenType
+>{
+
+#define DEF_KEYWORD(lower, upper) {#lower, TokenType::upper},
+
+#include "Keywords.info"
+
+#undef DEF_KEYWORD
+
+	// adding this to make macro work -- kind of jank but there will
+	// never be an identifier found that is just "" unless something
+	// is broken
+
+	{"", TokenType::VAR}
+};
+
 void Scanner::scanTokens() {
 	while (!isAtEnd()) {
 		start = current;
@@ -59,6 +80,9 @@ void Scanner::scanToken() {
 	case '/':
 		if (match('/')) { // => comment
 			while (peek() != '\n' && !isAtEnd()) advance();
+		}
+		else if (match('*')) {
+			blockComment();
 		}
 		else addToken(TokenType::SLASH);
 		break;
@@ -151,7 +175,38 @@ void Scanner::number() {
 void Scanner::identifier() {
 	while (isAlphanumeric(peek())) advance();
 
-	addToken(TokenType::IDENTIFIER);
+	TokenType type = TokenType::IDENTIFIER;
+
+	std::string_view substr = currentSubstr();
+
+	if (keywords.count(substr)) type = keywords.at(substr);
+
+	addToken(type);
+}
+
+void Scanner::blockComment() {
+	size_t nestCount = 1;
+
+	while (nestCount > 0) {
+		char c = advance();
+
+		if (c == '\n') {
+			line++;
+		}
+		else if (c == '\0') {
+			Lox::error(line, "unterminated block comment");
+			return;
+		}
+
+		if ((c == '/') && (peek() == '*')) {
+			nestCount++;
+			advance();
+		}
+		else if ((c == '*') && (peek() == '/')) {
+			nestCount--;
+			advance();
+		}
+	}
 }
 
 // utilities for testing what char is

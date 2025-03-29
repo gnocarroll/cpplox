@@ -35,7 +35,24 @@ public:
 	NTStringView(const std::string& s) :
 		std::string_view(s) {};
 
-	operator std::string_view() {
+	std::string_view toStringView() const {
 		return std::string_view(data(), size());
 	}
+
+	operator std::string_view() {
+		return *((std::string_view*)this);
+	}
+
+	auto operator<=>(const NTStringView& other) const {
+		const std::string_view* thisSV = this;
+		const std::string_view* otherSV = &other;
+
+		return *thisSV <=> *otherSV;
+	}
+
+	struct Hash {
+		size_t operator()(const NTStringView& ntsv) const {
+			return std::hash<std::string_view>{}(ntsv);
+		}
+	};
 };

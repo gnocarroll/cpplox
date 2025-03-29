@@ -3,6 +3,7 @@
 #include <atomic>
 #include <optional>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "LoxObject.hpp"
@@ -10,6 +11,11 @@
 #include "Token.hpp"
 
 class Scanner {
+	static const std::unordered_map<
+		std::string_view,
+		TokenType
+	> keywords;
+
 	const std::string_view source;
 	std::vector<Token> tokens;
 
@@ -79,6 +85,7 @@ class Scanner {
 	void string();
 	void number();
 	void identifier();
+	void blockComment();
 
 public:
 	Scanner(const std::string_view source) :
