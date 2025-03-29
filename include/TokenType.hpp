@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <string_view>
 
 #define INJECT_TOKS \
