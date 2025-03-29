@@ -1,10 +1,11 @@
 #include "Lox.hpp"
 
-#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <string>
-	
+
+#include "Util.hpp"
+
 // refers to interpreter error, not startup problem
 bool Lox::hadError = false;
 
@@ -24,26 +25,14 @@ int Lox::loxMain(const std::vector<std::string_view>& args) {
 	return runPrompt();
 }
 
-int Lox::runFile(std::string_view path) {
-	assert(path[path.size()] == '\0' && "path not null-terminated");
+int Lox::runFile(const std::string_view path) {
+    auto source = Util::slurp(path);
 
-	// will read entire file into memory buffer
+    if (!source) return -1;
+	
+    // run code in file
 
-	std::ifstream ifs(path.data(), std::ios::binary | std::ios::ate);
-
-	std::streamsize size = ifs.tellg();
-
-	ifs.seekg(0, std::ios::beg);
-
-	std::string source(size, 0);
-
-	if (!ifs.read(source.data(), size)) {
-		return -1; // reading failed
-	}
-
-	// run code in file
-
-	return run(source);
+	return run(*source);
 }
 
 int Lox::runPrompt() {

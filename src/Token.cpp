@@ -5,5 +5,5 @@
 #include "Util.hpp"
 
 std::string Token::toString() {
-    return SVsToString({ type.toStringView(), lexeme });
+    return Util::SVsToString({ type.toStringView(), lexeme });
 }
