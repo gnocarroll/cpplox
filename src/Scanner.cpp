@@ -149,7 +149,9 @@ void Scanner::number() {
 }
 
 void Scanner::identifier() {
+	while (isAlphanumeric(peek())) advance();
 
+	addToken(TokenType::IDENTIFIER);
 }
 
 // utilities for testing what char is
@@ -168,6 +170,9 @@ bool Scanner::isLetter(char c) {
 }
 bool Scanner::isAlpha(char c) {
 	return isLetter(c) || c == '_';
+}
+bool Scanner::isAlphanumeric(char c) {
+	return isAlpha(c) || isDigit(c);
 }
 
 std::optional<double> Scanner::parseNumber(NTStringView sv) {

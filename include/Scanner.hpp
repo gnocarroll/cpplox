@@ -27,6 +27,7 @@ class Scanner {
 	static bool isUpper(char c);
 	static bool isLetter(char c);
 	static bool isAlpha(char c);
+	static bool isAlphanumeric(char c);
 
 	static std::optional<double> parseNumber(NTStringView sv);
 
