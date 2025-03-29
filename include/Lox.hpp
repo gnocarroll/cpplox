@@ -21,7 +21,7 @@ private:
 	static int runPrompt();
 
 	// takes buffer full of bytes and will read + run
-	static int run(std::string_view source);
+	static int run(const std::string_view source);
 
 	static void report(int line, std::string_view where,
 		std::string_view message);

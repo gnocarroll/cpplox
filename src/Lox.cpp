@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Util.hpp"
+#include "Scanner.hpp"
 
 // refers to interpreter error, not startup problem
 bool Lox::hadError = false;
@@ -53,7 +54,12 @@ int Lox::runPrompt() {
 	return 0;
 }
 
-int Lox::run(std::string_view source) {
+int Lox::run(const std::string_view source) {
+	Scanner scanner(source);
+
+	for (const Token& token : scanner) {
+		std::cout << token;
+	}
 
 	if (hadError) return 65;
 

@@ -132,9 +132,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\Lox.cpp" />
+    <ClCompile Include="src\Lox.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Token.cpp" />
+    <ClCompile Include="src\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Lox.hpp" />
