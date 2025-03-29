@@ -1,0 +1,13 @@
+*.vs
+x64
+
+*.DS_Store
+
+*.ce
+*.cppe
+
+*.he
+*.hppe
+
+*.o
+*.obj
