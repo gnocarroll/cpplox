@@ -5,7 +5,7 @@
 
 class Lox {
 public:
-	static bool hadError; // set to false in loxMain
+	static bool hadError;
 
 	// porting from Java so will have this as "main func"
 	static int loxMain(const std::vector<std::string_view>& args);

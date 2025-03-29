@@ -1,6 +1,9 @@
 *.vs
 x64
 
+obj
+bin
+
 *.DS_Store
 
 *.ce

@@ -4,13 +4,14 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+	
+// refers to interpreter error, not startup problem
+bool Lox::hadError = false;
 
 // run Lox interpretere
 // ret is exit code
 
 int Lox::loxMain(const std::vector<std::string_view>& args) {
-	// refers to interpreter error, not startup problem
-	hadError = false;
 	
 	if (args.size() > 2) {
 		std::cerr << "Usage: cpplox [script]\n";
@@ -24,7 +25,7 @@ int Lox::loxMain(const std::vector<std::string_view>& args) {
 }
 
 int Lox::runFile(std::string_view path) {
-	assert(path[path.size()] == '\0', "path not null-terminated");
+	assert(path[path.size()] == '\0' && "path not null-terminated");
 
 	// will read entire file into memory buffer
 
