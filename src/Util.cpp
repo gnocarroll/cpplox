@@ -43,7 +43,7 @@ namespace Util {
 	std::ostream& outputSVs(
 		std::ostream& os,
 		std::initializer_list<const std::string_view> list,
-		const std::string_view sep = " "
+		const std::string_view sep
 	) {
 		size_t listSize = list.size();
 		size_t iterNo = 0;
@@ -59,21 +59,10 @@ namespace Util {
 		return os;
 	}
 
-	std::optional<std::string> slurp(const std::string_view path) {
+	std::optional<std::string> slurp(NTStringView path) {
 		// will read entire file into memory buffer
 
-		const char* cPath = nullptr;
-		std::optional<std::string> strPath;
-
-		// can only use string view directly for filepath if it is null-terminated
-
-		if (path[path.size()] == '\0') cPath = path.data();
-		else {
-			strPath = std::string(path);
-			cPath = strPath->data();
-		}
-
-		std::ifstream ifs(cPath, std::ios::binary | std::ios::ate);
+		std::ifstream ifs(path.data(), std::ios::binary | std::ios::ate);
 
 		if (!ifs) return {};
 

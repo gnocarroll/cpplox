@@ -63,6 +63,7 @@ public:
 	LoxObject(LoxObject& other) = delete;
 	LoxObject(LoxObject&& other) = default;
 
+	LoxObject& operator=(LoxObject& other) = delete;
 	LoxObject& operator=(LoxObject&& other) = default;
 
 	bool isValidType() {

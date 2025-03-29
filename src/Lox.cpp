@@ -13,20 +13,19 @@ bool Lox::hadError = false;
 // run Lox interpretere
 // ret is exit code
 
-int Lox::loxMain(const std::vector<std::string_view>& args) {
-	
-	if (args.size() > 2) {
+int Lox::loxMain(int argc, char** argv) {
+	if (argc > 2) {
 		std::cerr << "Usage: cpplox [script]\n";
 		return 64;
 	}
-	else if (args.size() == 2) {
-		return runFile(args[1]);
+	else if (argc == 2) {
+		return runFile(argv[1]);
 	}
 
 	return runPrompt();
 }
 
-int Lox::runFile(const std::string_view path) {
+int Lox::runFile(NTStringView path) {
     auto source = Util::slurp(path);
 
     if (!source) return -1;
@@ -58,7 +57,7 @@ int Lox::run(const std::string_view source) {
 	Scanner scanner(source);
 
 	for (const Token& token : scanner) {
-		std::cout << token;
+		std::cout << token << '\n';
 	}
 
 	if (hadError) return 65;
@@ -66,11 +65,11 @@ int Lox::run(const std::string_view source) {
 	return 0;
 }
 
-void Lox::error(int line, std::string_view message) {
+void Lox::error(size_t line, std::string_view message) {
 	report(line, "", message);
 }
 
-void Lox::report(int line, std::string_view where,
+void Lox::report(size_t line, std::string_view where,
 	std::string_view message) {
 
 	std::cerr << "[line " << line << "] Error" << where << ": " <<

@@ -6,6 +6,8 @@
 #include <string>
 #include <string_view>
 
+#include "NTStringView.hpp"
+
 namespace Util {
 
 	// convert initializer list of string_view objects to string by placing
@@ -22,6 +24,6 @@ namespace Util {
 	);
 
 	// read entire file into memory
-	std::optional<std::string> slurp(const std::string_view path);
+	std::optional<std::string> slurp(NTStringView path);
 
 }

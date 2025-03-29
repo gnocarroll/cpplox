@@ -13,10 +13,10 @@ public:
 	const TokenType type;
 	const std::string_view lexeme;
 	LoxObject literal;
-	const int line;
+	const size_t line;
 
 	Token(const TokenType type, const std::string_view lexeme,
-		LoxObject& literal, const int line) :
+		LoxObject& literal, const size_t line) :
 		type(type), lexeme(lexeme), literal(std::move(literal)), line(line) {}
 
 	Token(Token& other) = delete;

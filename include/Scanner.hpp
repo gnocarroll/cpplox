@@ -1,10 +1,12 @@
 #pragma once
 
+#include <atomic>
 #include <optional>
 #include <string_view>
 #include <vector>
 
 #include "LoxObject.hpp"
+#include "NTStringView.hpp"
 #include "Token.hpp"
 
 class Scanner {
@@ -26,7 +28,7 @@ class Scanner {
 	static bool isLetter(char c);
 	static bool isAlpha(char c);
 
-	static std::optional<double> parseNumber(const std::string_view sv);
+	static std::optional<double> parseNumber(NTStringView sv);
 
 	bool isAtEnd() const {
 		return current >= sourceNChars;
@@ -61,7 +63,7 @@ class Scanner {
 
 	// substring [start, current)
 
-	const std::string_view currentSubstr() const;
+	std::string_view currentSubstr() const;
 
 	void scanTokens(); // reads all
 	void scanToken(); // reads one
@@ -80,4 +82,13 @@ class Scanner {
 public:
 	Scanner(const std::string_view source) :
 		source(source), sourceNChars(source.size()) {}
+
+	Token* begin() {
+		if (!hasScanned) scanTokens();
+
+		return tokens.data();
+	}
+	Token* end() {
+		return tokens.data() + tokens.size();
+	}
 };

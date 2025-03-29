@@ -10,7 +10,16 @@ void Scanner::scanTokens() {
 		scanToken();
 	}
 
-	tokens.push_back(Token(TokenType::TOK_EOF, "", nullptr, line));
+	LoxObject obj;
+
+	tokens.push_back(Token(
+		TokenType::TOK_EOF,
+		std::string_view(""),
+		obj,
+		line
+	));
+
+	hasScanned = true;
 }
 
 void Scanner::scanToken() {
@@ -122,7 +131,11 @@ void Scanner::number() {
 		while (isDigit(peek())) advance();
 	}
 
-	auto number = Scanner::parseNumber(currentSubstr());
+	// needs to be null-terminated for c provided str to double conversion,
+	// so will create std::string
+	std::string numStr(currentSubstr());
+
+	auto number = Scanner::parseNumber(numStr);
 
 	LoxObject numberObj;
 
@@ -133,6 +146,10 @@ void Scanner::number() {
 	else numberObj = std::move(LoxObject(*number));
 
 	addToken(TokenType::NUMBER, numberObj);
+}
+
+void Scanner::identifier() {
+
 }
 
 // utilities for testing what char is
@@ -153,30 +170,19 @@ bool Scanner::isAlpha(char c) {
 	return isLetter(c) || c == '_';
 }
 
-std::optional<double> Scanner::parseNumber(const std::string_view sv) {
+std::optional<double> Scanner::parseNumber(NTStringView sv) {
 	if (sv.size() == 0) return {};
 
-	const char* cStr = sv.data();
-	const char* realEnd = cStr + sv.size();
 	char* foundEnd = nullptr;
 
-	std::optional<std::string> str;
+	double ret = std::strtod(sv.data(), &foundEnd);
 
-	if (sv[sv.size()] != '\0') {
-		str = std::string(sv);
-		
-		cStr = str->c_str();
-		realEnd = cStr + str->size();
-	}
-
-	double ret = std::strtod(cStr, &foundEnd);
-
-	if (foundEnd != realEnd) return {};
+	if (foundEnd != (sv.data() + sv.size())) return {};
 
 	return ret;
 }
 
-const std::string_view Scanner::currentSubstr() const {
+std::string_view Scanner::currentSubstr() const {
 	return std::string_view(
 		source.data() + start,
 		current - start
