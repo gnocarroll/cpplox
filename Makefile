@@ -13,12 +13,18 @@ CXXFLAGS := -std=c++17 -Wall -I$(INCLUDE)
 CPP_SRC := $(wildcard $(SRC)/*.cpp)
 CPP_OBJ := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(CPP_SRC))
 
-all: $(TARGET)
+TARGET_PATH := $(BIN)/$(TARGET)
+
+all: $(TARGET_PATH)
 
 $(OBJ)/%.o : $(SRC)/%.cpp
 	@mkdir -p $(OBJ)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(TARGET): $(CPP_OBJ)
+$(TARGET_PATH): $(CPP_OBJ)
 	@mkdir -p $(BIN)
-	$(CXX) -o $(BIN)/$@ $(CPP_OBJ)
+	$(CXX) -o $@ $(CPP_OBJ)
+
+.PHONY: clean
+clean:
+	-rm $(OBJ)/*.o $(TARGET_PATH)
