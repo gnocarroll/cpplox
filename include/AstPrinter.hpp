@@ -16,7 +16,7 @@ class AstPrinter : ExprVisitor<std::string> {
 public:
     std::string visitBinaryExpr(Binary& expr) {
         return parenthesize(expr.bOperator.lexeme,
-            { expr.left, expr.right });
+            { &expr.left, &expr.right });
     }
 
     std::string visitGroupingExpr(Grouping& expr) {
