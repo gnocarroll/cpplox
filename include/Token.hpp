@@ -11,7 +11,7 @@
 class Token {
 public:
 	const TokenType type;
-	const std::string_view lexeme;
+	std::string_view lexeme;
 	LoxObject literal;
 	const size_t line;
 
@@ -19,7 +19,7 @@ public:
 		LoxObject& literal, const size_t line) :
 		type(type), lexeme(lexeme), literal(std::move(literal)), line(line) {}
 
-	Token(Token& other) = delete;
+	Token(Token& other) = default;
 	Token(Token&& other) = default;
 
 	std::string toString();

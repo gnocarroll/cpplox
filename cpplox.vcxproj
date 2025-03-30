@@ -139,6 +139,7 @@
     <ClCompile Include="src\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Expr.hpp" />
     <ClInclude Include="include\Lox.hpp" />
     <ClInclude Include="include\LoxObject.hpp" />
     <ClInclude Include="include\NTStringView.hpp" />

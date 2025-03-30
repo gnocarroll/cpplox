@@ -31,7 +31,6 @@ public:
 #undef LOX_OBJ
 	};
 
-private:
 	Type type = INVALID;
 
 	struct {
@@ -40,7 +39,6 @@ private:
 		std::string_view stringView = "";
 	} data;
 
-public:
 	LoxObject(Type type) : type(type) {
 		if (type < 0 || type >= LOX_OBJ_TYPE_COUNT) type = INVALID;
 	}
@@ -84,6 +82,21 @@ public:
 		if (type != STRING) return {};
 
 		return data.stringView;
+	}
+
+	std::string toString() {
+		switch (type) {
+		case NIL: return "nil";
+		case BOOLEAN: return data.boolean ? "true" : "false";
+		case NUMBER: return std::to_string(data.number);
+		case STRING: return std::string(
+			data.stringView.data(),
+			data.stringView.size());
+		default:
+			break;
+		}
+
+		return "invalid";
 	}
 };
 

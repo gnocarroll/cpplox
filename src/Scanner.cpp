@@ -81,7 +81,7 @@ void Scanner::scanToken() {
 		if (match('/')) { // => comment
 			while (peek() != '\n' && !isAtEnd()) advance();
 		}
-		else if (match('*')) {
+		else if (match('*')) { // => block comment (challenge)
 			blockComment();
 		}
 		else addToken(TokenType::SLASH);
