@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #define INJECT_OBJ_TYPES \
@@ -60,6 +61,14 @@ public:
 
 	LoxObject(LoxObject& other) = delete;
 	LoxObject(LoxObject&& other) = default;
+
+	static LoxObject nil() {
+		LoxObject ret;
+
+		ret.type = NIL;
+
+		return ret;
+	}
 
 	LoxObject& operator=(LoxObject& other) = delete;
 	LoxObject& operator=(LoxObject&& other) = default;

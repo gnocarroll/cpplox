@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="src\Lox.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Parser.cpp" />
     <ClCompile Include="src\Scanner.cpp" />
     <ClCompile Include="src\Token.cpp" />
     <ClCompile Include="src\Util.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="include\Lox.hpp" />
     <ClInclude Include="include\LoxObject.hpp" />
     <ClInclude Include="include\NTStringView.hpp" />
+    <ClInclude Include="include\Parser.hpp" />
     <ClInclude Include="include\Scanner.hpp" />
     <ClInclude Include="include\Token.hpp" />
     <ClInclude Include="include\TokenType.hpp" />

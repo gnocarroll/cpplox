@@ -72,6 +72,13 @@ private:
 public:
 	TokenType(Type type) : type(type) {}
 	
+	bool operator ==(const TokenType& other) const {
+		return type == other.type;
+	}
+	bool operator !=(const TokenType& other) const {
+		return type != other.type;
+	}
+
 	const char* toCStr() const {
 		if (type < 0 || type >= LOX_TOKENTYPE_COUNT) return nullptr;
 
@@ -84,6 +91,21 @@ public:
 		if (!cStr) return std::string_view("");
 
 		return cStr;
+	}
+
+
+	friend bool operator ==(const TokenType& left, const TokenType::Type& right) {
+		return left.type == right;
+	}
+	friend bool operator !=(const TokenType& left, const TokenType::Type& right) {
+		return left.type != right;
+	}
+
+	friend bool operator ==(const TokenType::Type& left, const TokenType& right) {
+		return left == right.type;
+	}
+	friend bool operator !=(const TokenType::Type& left, const TokenType& right) {
+		return left != right.type;
 	}
 };
 
