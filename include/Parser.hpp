@@ -11,7 +11,7 @@
 
 class Parser;
 
-typedef std::optional<std::unique_ptr<Expr> > ExprPtr;
+using ExprPtr = std::optional<std::unique_ptr<Expr> >;
 
 using ParseExpr = ExprPtr(Parser::*)();
 
@@ -23,6 +23,7 @@ class Parser {
 	const std::vector<Token>& tokens;
 	size_t nTokens;
 
+public:
 	Parser(const std::vector<Token>& tokens) :
 		tokens(tokens), nTokens(tokens.size()) {}
 	
@@ -30,6 +31,10 @@ class Parser {
 	Parser(Parser& other) = delete;
 	Parser(Parser&& other) = default;
 
+	// begin parsing
+	ExprPtr parse();
+
+private:
 	// check if upcoming tokens match ones provided in initializer list
 	bool match(std::initializer_list<TokenType> types);
 
@@ -66,8 +71,6 @@ class Parser {
 
 		if (!exprPtr) return {};
 
-		auto expr = *exprPtr;
-
 		while (match({ types... })) {
 			auto& bOperator = previous();
 			
@@ -75,16 +78,14 @@ class Parser {
 
 			if (!rightPtr) return {};
 
-			auto right = *rightPtr;
-
-			expr = std::make_unique<Binary>(
-				std::move(expr),
+			exprPtr = std::make_unique<Binary>(
+				std::move(*exprPtr),
 				bOperator,
-				std::move(right)
+				std::move(*rightPtr)
 			);
 		}
 
-		return expr;
+		return exprPtr;
 	}
 
 	std::optional<const Token&> consume(TokenType type);
@@ -92,7 +93,4 @@ class Parser {
 
 	// in the event of any problems...
 	void synchronize();
-
-	// begin parsing
-	ExprPtr parse();
 };

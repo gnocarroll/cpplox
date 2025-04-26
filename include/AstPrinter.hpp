@@ -6,21 +6,39 @@
 #include <string>
 
 class AstPrinter : ExprVisitor<std::string> {
+public:
+    std::string print(Expr& expr) {
+        return expr.accept(*this);
+    }
+    
+    template <typename... Types>
     std::string parenthesize(
         std::string_view s,
-        std::initializer_list<Expr*> exprs
+        Types&&... exprs
     ) {
+        std::string ret;
+        ret.reserve(64);
 
+        ret += "(";
+        ret += s;
+
+        for (const auto& expr : exprs) {
+            ret += " ";
+            ret += expr->accept(*this);
+        }
+
+        ret += ")";
+
+        return ret;
     }
 
-public:
     std::string visitBinaryExpr(Binary& expr) {
         return parenthesize(expr.bOperator.lexeme,
-            { &expr.left, &expr.right });
+            expr.left, expr.right);
     }
 
     std::string visitGroupingExpr(Grouping& expr) {
-        return parenthesize("group", { expr.expression });
+        return parenthesize("group", *expr.expression);
     }
 
     std::string visitLiteralExpr(Literal& expr) {
@@ -28,6 +46,6 @@ public:
     }
 
     std::string visitUnaryExpr(Unary& expr) {
-        return parenthesize(expr.uOperator.lexeme, { expr.right });
+        return parenthesize(expr.uOperator.lexeme, expr.right);
     }
 };

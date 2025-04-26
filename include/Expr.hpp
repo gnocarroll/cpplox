@@ -6,25 +6,18 @@
 template <typename T>
 class ExprVisitor;
 
+class Expr;
+
+template <typename T>
+static T exprAccept(Expr* expr, const ExprVisitor<T>& exprVisitor);
+
 class Expr {
 public:
 	virtual ~Expr() = default;
 
 	template <typename T>
 	T accept(const ExprVisitor<T>& exprVisitor) {
-#define CHILD_CASE(childT) \
-		if (dynamic_cast<childT>(this) != nullptr) { \
-			return dynamic_cast<childT>(this)->accept(exprVisitor); \
-		}
-
-		CHILD_CASE(Binary)
-		CHILD_CASE(Grouping)
-		CHILD_CASE(Literal)
-		CHILD_CASE(Binary)
-
-#undef CHILD_CASE
-
-		return T;
+		exprAccept(this, exprVisitor);
 	}
 };
 
@@ -37,13 +30,13 @@ public:
 class Binary : public Expr {
 public:
 	std::unique_ptr<Expr> left;
-	Token bOperator;
+	Token& bOperator;
 	std::unique_ptr<Expr> right;
 
 	Binary() = delete;
 	Binary(
 		std::unique_ptr<Expr> left,
-		Token bOperator,
+		Token& bOperator,
 		std::unique_ptr<Expr> right
 	) : left(std::move(left)), bOperator(bOperator), right(std::move(right)) {};
 
@@ -79,11 +72,11 @@ public:
 
 class Unary : public Expr {
 public:
-	Token uOperator;
+	Token& uOperator;
 	std::unique_ptr<Expr> right;
 
 	Unary() = delete;
-	Unary(Token uOperator, std::unique_ptr<Expr> right) :
+	Unary(Token& uOperator, std::unique_ptr<Expr> right) :
 		uOperator(uOperator), right(std::move(right)) {};
 
 	CHILD_ACCEPT
@@ -92,8 +85,25 @@ public:
 template <typename T>
 class ExprVisitor {
 public:
-	virtual T visitBinaryExpr(Binary& expr);
-	virtual T visitGroupingExpr(Binary& expr);
-	virtual T visitLiteralExpr(Binary& expr);
-	virtual T visitUnaryExpr(Binary& expr);
+	virtual T visitBinaryExpr(Binary& expr) = 0;
+	virtual T visitGroupingExpr(Grouping& expr) = 0;
+	virtual T visitLiteralExpr(Literal& expr) = 0;
+	virtual T visitUnaryExpr(Unary& expr) = 0;
 };
+
+template <typename T>
+static T exprAccept(Expr* expr, const ExprVisitor<T>& exprVisitor) {
+#define CHILD_CASE(childT) \
+	if (dynamic_cast<childT*>(this) != nullptr) { \
+		return dynamic_cast<childT*>(this)->accept(exprVisitor); \
+	}
+
+	CHILD_CASE(Binary)
+	CHILD_CASE(Grouping)
+	CHILD_CASE(Literal)
+	CHILD_CASE(Binary)
+
+#undef CHILD_CASE
+
+	return T;
+}

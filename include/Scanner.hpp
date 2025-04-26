@@ -99,4 +99,8 @@ public:
 	Token* end() {
 		return tokens.data() + tokens.size();
 	}
+
+	const std::vector<Token>& data() {
+		return tokens;
+	}
 };

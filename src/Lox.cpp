@@ -4,8 +4,11 @@
 #include <iostream>
 #include <string>
 
-#include "Util.hpp"
+#include "AstPrinter.hpp"
+#include "Parser.hpp"
 #include "Scanner.hpp"
+#include "Util.hpp"
+
 
 // refers to interpreter error, not startup problem
 bool Lox::hadError = false;
@@ -56,11 +59,15 @@ int Lox::runPrompt() {
 int Lox::run(const std::string_view source) {
 	Scanner scanner(source);
 
-	for (const Token& token : scanner) {
-		std::cout << token << '\n';
-	}
-
 	if (hadError) return 65;
+
+	Parser parser(scanner.data());
+	ExprPtr exprPtr = parser.parse();
+
+	if (hadError || !exprPtr) return 65;
+
+	std::cout << AstPrinter().print(**exprPtr)
+		<< '\n';
 
 	return 0;
 }
