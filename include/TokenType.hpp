@@ -79,6 +79,10 @@ public:
 		return type != other.type;
 	}
 
+	enum Type getVal() const {
+		return type;
+	}
+
 	const char* toCStr() const {
 		if (type < 0 || type >= LOX_TOKENTYPE_COUNT) return nullptr;
 

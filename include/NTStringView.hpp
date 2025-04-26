@@ -40,7 +40,7 @@ public:
 	}
 
 	operator std::string_view() {
-		return *((std::string_view*)this);
+		return toStringView();
 	}
 
 	auto operator<=>(const NTStringView& other) const {

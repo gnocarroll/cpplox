@@ -2,6 +2,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "Expr.hpp"
@@ -10,7 +11,9 @@
 
 class Parser;
 
-using ParseExpr = std::unique_ptr<Expr>(Parser::*)();
+typedef std::optional<std::unique_ptr<Expr> > ExprPtr;
+
+using ParseExpr = ExprPtr(Parser::*)();
 
 class Parser {
 	size_t current = 0;
@@ -45,25 +48,34 @@ class Parser {
 
 
 	// expressions using binary operators
-	std::unique_ptr<Expr> expression();
-	std::unique_ptr<Expr> equality();
-	std::unique_ptr<Expr> comparison();
-	std::unique_ptr<Expr> term();
-	std::unique_ptr<Expr> factor();
+	ExprPtr expression();
+	ExprPtr equality();
+	ExprPtr comparison();
+	ExprPtr term();
+	ExprPtr factor();
 
 	// unary operators
-	std::unique_ptr<Expr> unary();
+	ExprPtr unary();
 
 	// primary (e.g. string literal or parenthesized expr)
-	std::unique_ptr<Expr> primary();
+	ExprPtr primary();
 
 	template<ParseExpr subExpr, typename... Types>
-	std::unique_ptr<Expr> parseBinary(Types... types) {
-		auto expr = subExpr();
+	ExprPtr parseBinary(Types... types) {
+		auto exprPtr = subExpr();
+
+		if (!exprPtr) return {};
+
+		auto expr = *exprPtr;
 
 		while (match({ types... })) {
 			auto& bOperator = previous();
-			auto right = subExpr();
+			
+			auto rightPtr = subExpr();
+
+			if (!rightPtr) return {};
+
+			auto right = *rightPtr;
 
 			expr = std::make_unique<Binary>(
 				std::move(expr),
@@ -75,5 +87,12 @@ class Parser {
 		return expr;
 	}
 
-	const Token& consume(TokenType type, NTStringView msg);
+	std::optional<const Token&> consume(TokenType type);
+	static void error(const Token& token, NTStringView msg);
+
+	// in the event of any problems...
+	void synchronize();
+
+	// begin parsing
+	ExprPtr parse();
 };

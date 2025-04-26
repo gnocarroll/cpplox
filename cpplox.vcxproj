@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Lox.cpp" />
+    <ClCompile Include="src\LoxObject.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Parser.cpp" />
     <ClCompile Include="src\Scanner.cpp" />

@@ -13,6 +13,7 @@ public:
 	static int loxMain(int argc, char** argv);
 
 	static void error(size_t line, std::string_view message);
+	static void error(const Token& token, std::string_view message);
 
 private:
 

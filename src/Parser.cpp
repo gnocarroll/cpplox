@@ -1,5 +1,7 @@
 #include "Parser.hpp"
 
+#include "Lox.hpp"
+
 // check if upcoming tokens match ones provided in initializer list
 bool Parser::match(std::initializer_list<TokenType> types) {
 	for (const auto& type : types) {
@@ -40,17 +42,17 @@ const Token& Parser::previous() {
 }
 
 // parsing different kinds of expressions with these functions
-std::unique_ptr<Expr> Parser::expression() {
+ExprPtr Parser::expression() {
 	return equality();
 }
 
 // will template it so that you just have to provide the operators you need
 
-std::unique_ptr<Expr> Parser::equality() {
+ExprPtr Parser::equality() {
 	return parseBinary<comparison>(TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL);
 }
 
-std::unique_ptr<Expr> Parser::comparison() {
+ExprPtr Parser::comparison() {
 	return parseBinary<term>(
 		TokenType::GREATER,
 		TokenType::GREATER_EQUAL,
@@ -59,15 +61,15 @@ std::unique_ptr<Expr> Parser::comparison() {
 	);
 }
 
-std::unique_ptr<Expr> Parser::term() {
+ExprPtr Parser::term() {
 	return parseBinary<factor>(TokenType::PLUS, TokenType::MINUS);
 }
 
-std::unique_ptr<Expr> Parser::factor() {
+ExprPtr Parser::factor() {
 	return parseBinary<unary>(TokenType::STAR, TokenType::SLASH);
 }
 
-std::unique_ptr<Expr> Parser::unary() {
+ExprPtr Parser::unary() {
 	if (match({ TokenType::BANG, TokenType::MINUS })) {
 		auto& uOperator = previous();
 		auto right = unary();
@@ -76,14 +78,14 @@ std::unique_ptr<Expr> Parser::unary() {
 	}
 }
 
-std::unique_ptr<Expr> Parser::primary() {
+ExprPtr Parser::primary() {
 	// literals
 
 	if (match({ TokenType::FALSE })) {
-		return std::make_unique<Literal>(LoxObject(false));
+		return std::make_unique<Literal>(LoxObject::boolFalse());
 	}
 	if (match({ TokenType::TRUE })) {
-		return std::make_unique<Literal>(LoxObject(true));
+		return std::make_unique<Literal>(LoxObject::boolTrue());
 	}
 	if (match({ TokenType::NIL })) {
 		return std::make_unique<Literal>(LoxObject::nil());
@@ -97,10 +99,59 @@ std::unique_ptr<Expr> Parser::primary() {
 	if (match({ TokenType::LEFT_PAREN })) {
 		auto expr = expression();
 
-		consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
+		if (!consume(TokenType::RIGHT_PAREN)) {
+			Parser::error(peek(), "Expected ')' after expression.");
+			return {};
+		}
 
 		return std::make_unique<Grouping>(std::move(expr));
 	}
 
-	// ...
+	// did not match
+
+	Parser::error(peek(), "Expected primary expr, no expansion matched");
+	return {};
+}
+
+std::optional<const Token&> Parser::consume(TokenType type) {
+	if (check(type)) return advance();
+
+	return {};
+}
+
+void Parser::error(const Token & token, NTStringView msg) {
+	Lox::error(token, msg.toStringView());
+}
+
+void Parser::synchronize() {
+	advance();
+
+	while (!isAtEnd()) {
+		if (previous().type == TokenType::SEMICOLON) return;
+
+		switch (peek().type.getVal()) {
+#define CASE_TT(name) case TokenType::name:
+
+			CASE_TT(CLASS)
+			CASE_TT(FUN)
+			CASE_TT(VAR)
+			CASE_TT(FOR)
+			CASE_TT(IF)
+			CASE_TT(WHILE)
+			CASE_TT(PRINT)
+			CASE_TT(RETURN)
+
+#undef CASE_TT
+			return; // if one of the above then done
+
+		default:
+			break;
+		}
+
+		advance();
+	}
+}
+
+ExprPtr Parser::parse() {
+	return expression();
 }

@@ -69,6 +69,31 @@ void Lox::error(size_t line, std::string_view message) {
 	report(line, "", message);
 }
 
+void Lox::error(const Token& token, std::string_view message) {
+	if (token.type == TokenType::TOK_EOF) {
+		report(token.line, " at end", message);
+		return;
+	}
+
+	std::string where;
+	constexpr static char beforeLexeme[] = " at '";
+	constexpr static char afterLexeme[] = "'";
+
+#define STRLEN_ARR(arr) (sizeof(arr) - 1)
+
+	where.reserve(STRLEN_ARR(beforeLexeme) + token.lexeme.size() +
+		STRLEN_ARR(afterLexeme));
+
+#undef STRLEN_ARR
+
+	// apparently can't do std::string + std::string_view ???
+	const char* lexeme = token.lexeme.data();
+
+	where = where + beforeLexeme + lexeme + afterLexeme;
+
+	report(token.line, where, message);
+}
+
 void Lox::report(size_t line, std::string_view where,
 	std::string_view message) {
 

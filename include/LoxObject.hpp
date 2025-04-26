@@ -62,13 +62,11 @@ public:
 	LoxObject(LoxObject& other) = delete;
 	LoxObject(LoxObject&& other) = default;
 
-	static LoxObject nil() {
-		LoxObject ret;
-
-		ret.type = NIL;
-
-		return ret;
-	}
+	// static factory methods to get certain literals
+	static LoxObject nil();
+	static LoxObject boolean();
+	static LoxObject boolTrue();
+	static LoxObject boolFalse();
 
 	LoxObject& operator=(LoxObject& other) = delete;
 	LoxObject& operator=(LoxObject&& other) = default;
